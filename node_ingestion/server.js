@@ -14,7 +14,6 @@ var express,
     server,
     checkItemsCollection,
     insertDbItem,
-    createResult,
     amqp,
     sendMessage,
     itemsCollectionName = "items";
@@ -68,30 +67,24 @@ try {
         });
     };
 
-    createResult = function (res) {
-        return {
-            instanceId: instanceUuid,
-            result: res
-        };
-    };
-
     checkItemsCollection = function () {
         db.createCollection(itemsCollectionName, function (err, collection) {
             return;
         });
     };
 
-    insertDbItem = function (req, successCallback, errorCallback) {
+    insertDbItem = function (item, successCallback, errorCallback) {
         var collection;
         try {
             checkItemsCollection();
             collection = db.collection(itemsCollectionName);
-            collection.insertOne(req.body, {
+            collection.insertOne(item, {
                 w: 1
             }, function (err, result) {
                 if (err) {
                     errorCallback();
                 } else {
+                    console.log("Item added with ID %s", item.itemId);
                     successCallback(result);
                 }
             });
@@ -104,9 +97,12 @@ try {
         var itemId = uuid.v4();
         req.body.itemId = itemId;
         req.body.isProcessed = false;
-        insertDbItem(req, function (result) {
+        insertDbItem(req.body, function (result) {
             sendMessage(itemId, function () {
-                res.status(201).send(createResult(result));
+                res.status(201).send({
+                    instanceId: instanceUuid,
+                    itemId: itemId
+                });
             }, function (error) {
                 res.status(500).send({
                     error: error
