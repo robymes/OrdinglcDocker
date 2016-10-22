@@ -41,19 +41,19 @@ try {
                                 durable: false
                             });
                             console.log("Instance %s - Getting message", instanceUuid);
-                            ch.get(q, function (err, msgOrFalse) {
+                            ch.get(q, {
+                                noAck: true
+                            }, function (err, msgOrFalse) {
                                 if (err) {
                                     errorCallback(err);
                                 } else if (msgOrFalse) {
                                     processItem(msgOrFalse.content.toString(), function () {
-                                        console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
+                                        console.log("Instance %s - Processed item %s", instanceUuid, msgOrFalse.content.toString());
                                         successCallback();
                                     }, function (err) {
                                         errorCallback(err);
                                     });
                                 }
-                            }, {
-                                noAck: true
                             });
                         } catch (ex) {
                             errorCallback(err);
