@@ -77,11 +77,15 @@ try {
                         query: {
                             itemId: itemId
                         },
+                        sort: {
+                            itemId: 1
+                        },
                         update: {
                             $set: {
                                 isProcessed: true
                             }
-                        }
+                        },
+                        upsert: true
                     }, function (err, object) {
                         if (err) {
                             errorCallback(err);
