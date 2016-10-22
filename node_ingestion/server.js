@@ -74,6 +74,12 @@ try {
         });
     });
 
+    app.get("/ping", function (req, res) {
+        res.status(200).send({
+            instanceId: instanceUuid
+        });
+    });
+
     /*app.get("/listUsers", function (req, res) {
         var collection;
         checkItemsCollection();
