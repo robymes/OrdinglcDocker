@@ -10,13 +10,12 @@ var mongoDb,
     checkItemsCollection,
     processItem,
     amqp,
-    receiveMessages,
+    receiveMessage,
     itemsCollectionName = "items",
+    delay = 2000,
     maxErrors = 100,
-    fakeDelay = 2000,
     errorsCount,
-    pollListen,
-    onTimeout;
+    pollListen;
 
 try {
     uuid = require("uuid");
@@ -26,19 +25,7 @@ try {
     mongoClient = mongoDb.MongoClient;
     mongoUrl = "mongodb://mongo:27017/ordinglc";
 
-    onTimeout = function (ch, q, errorCallback) {
-        ch.consume(q, function (msg) {
-            processItem(msg.content.toString(), function () {
-                console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
-            }, function (err) {
-                errorCallback(err);
-            });
-        }, {
-            noAck: true
-        });
-    };
-
-    receiveMessages = function (errorCallback) {
+    receiveMessage = function (successCallback, errorCallback) {
         amqp.connect("amqp://rabbitmq_bus", function (err, conn) {
             if (err) {
                 errorCallback(err);
@@ -53,7 +40,16 @@ try {
                             ch.assertQueue(q, {
                                 durable: false
                             });
-                            setTimeout(onTimeout, fakeDelay, ch, q, errorCallback);
+                            ch.get(q, function (msg) {
+                                processItem(msg.content.toString(), function () {
+                                    console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
+                                    successCallback();
+                                }, function (err) {
+                                    errorCallback(err);
+                                });
+                            }, {
+                                noAck: true
+                            });
                         } catch (ex) {
                             errorCallback(err);
                         }
@@ -105,9 +101,11 @@ try {
 
     pollListen = function () {
         if (errorsCount <= maxErrors) {
-            receiveMessages(function (error) {
+            receiveMessage(function (error) {
+                setTimeout(pollListen, delay);
+            }, function (error) {
                 console.log("Instance %s - Error: %s", instanceUuid, error);
-                setTimeout(pollListen, 5000);
+                setTimeout(pollListen, delay);
             });
         } else {
             console.log("Instance %s - Max Errors: %s", instanceUuid);
