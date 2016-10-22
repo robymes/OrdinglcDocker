@@ -26,28 +26,16 @@ try {
     mongoClient = mongoDb.MongoClient;
     mongoUrl = "mongodb://mongo:27017/ordinglc";
 
-    onTimeout = function (err, ch, errorCallback) {
-        var q = "ordinglc";
-        if (err) {
-            errorCallback(err);
-        } else {
-            try {
-                ch.assertQueue(q, {
-                    durable: false
-                });
-                ch.consume(q, function (msg) {
-                    processItem(msg.content.toString(), function () {
-                        console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
-                    }, function (err) {
-                        errorCallback(err);
-                    });
-                }, {
-                    noAck: true
-                });
-            } catch (ex) {
+    onTimeout = function (ch, q, errorCallback) {
+        ch.consume(q, function (msg) {
+            processItem(msg.content.toString(), function () {
+                console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
+            }, function (err) {
                 errorCallback(err);
-            }
-        }
+            });
+        }, {
+            noAck: true
+        });
     };
 
     receiveMessages = function (errorCallback) {
@@ -57,7 +45,19 @@ try {
             } else {
                 console.log("Instance %s - Waiting for messages", instanceUuid);
                 conn.createChannel(function (err, ch) {
-                    setTimeout(onTimeout, fakeDelay, err, ch, errorCallback);
+                    var q = "ordinglc";
+                    if (err) {
+                        errorCallback(err);
+                    } else {
+                        try {
+                            ch.assertQueue(q, {
+                                durable: false
+                            });
+                            setTimeout(onTimeout, fakeDelay, ch, q, errorCallback);
+                        } catch (ex) {
+                            errorCallback(err);
+                        }
+                    }
                 });
             }
         });
