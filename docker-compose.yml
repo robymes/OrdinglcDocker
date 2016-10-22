@@ -28,6 +28,12 @@ services:
             - "8080:8080"
         networks:
             - main_network
+    node_processing:
+        image: robymes/node_processing:latest
+        container_name: node_processing
+        hostname: node_processing
+        networks:
+            - main_network
 volumes:
     mongodata:
 networks:
