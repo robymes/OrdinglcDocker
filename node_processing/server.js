@@ -40,7 +40,6 @@ try {
                                 durable: false
                             });
                             ch.consume(q, function (msg) {
-                                console.log("Instance %s - Received itemId %s", instanceUuid, msg.content.toString());
                                 processItem(msg.content.toString(), function () {
                                     console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
                                 }, function (err) {
@@ -74,6 +73,7 @@ try {
                 errorCallback("MongoDB database is null");
             } else {
                 checkItemsCollection(database, function (collection) {
+                    console.log("Instance %s - Processing item %s", instanceUuid, itemId);
                     collection.findAndModify({
                         query: {
                             itemId: itemId
