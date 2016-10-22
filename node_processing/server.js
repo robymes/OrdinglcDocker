@@ -40,13 +40,18 @@ try {
                             ch.assertQueue(q, {
                                 durable: false
                             });
-                            ch.get(q, function (msg) {
-                                processItem(msg.content.toString(), function () {
-                                    console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
-                                    successCallback();
-                                }, function (err) {
+                            console.log("Instance %s - Getting message", instanceUuid);
+                            ch.get(q, function (err, msgOrFalse) {
+                                if (err) {
                                     errorCallback(err);
-                                });
+                                } else if (msgOrFalse) {
+                                    processItem(msgOrFalse.content.toString(), function () {
+                                        console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
+                                        successCallback();
+                                    }, function (err) {
+                                        errorCallback(err);
+                                    });
+                                }
                             }, {
                                 noAck: true
                             });
@@ -101,7 +106,7 @@ try {
 
     pollListen = function () {
         if (errorsCount <= maxErrors) {
-            receiveMessage(function (error) {
+            receiveMessage(function () {
                 setTimeout(pollListen, delay);
             }, function (error) {
                 console.log("Instance %s - Error: %s", instanceUuid, error);
