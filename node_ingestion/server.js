@@ -42,12 +42,12 @@ try {
     sendMessage = function (itemId, successCallback, errorCallback) {
         amqp.connect("amqp://rabbitmq_bus", function (err, conn) {
             if (err) {
-                errorCallback();
+                errorCallback(err);
             } else {
                 conn.createChannel(function (err, ch) {
                     var q = "ordinglc";
                     if (err) {
-                        errorCallback();
+                        errorCallback(err);
                     } else {
                         try {
                             ch.assertQueue(q, {
@@ -57,7 +57,7 @@ try {
                             console.log("Message sent with ID %s", itemId);
                             successCallback();
                         } catch (ex) {
-                            errorCallback();
+                            errorCallback(err);
                         }
                     }
                 });
@@ -83,30 +83,39 @@ try {
 
     insertDbItem = function (req, successCallback, errorCallback) {
         var collection;
-        checkItemsCollection();
-        collection = db.collection(itemsCollectionName);
-        collection.insertOne(req.body, {
-            w: 1
-        }, function (err, result) {
-            if (err) {
-                errorCallback();
-            } else {
-                successCallback(result);
-            }
-        });
+        try {
+            checkItemsCollection();
+            collection = db.collection(itemsCollectionName);
+            collection.insertOne(req.body, {
+                w: 1
+            }, function (err, result) {
+                if (err) {
+                    errorCallback();
+                } else {
+                    successCallback(result);
+                }
+            });
+        } catch (ex) {
+            errorCallback(ex);
+        }
     };
 
     app.post("/addItem", function (req, res) {
-        req.body.itemId = uuid.v4();
+        var itemId = uuid.v4();
+        req.body.itemId = itemId;
         req.body.isProcessed = false;
         insertDbItem(req, function (result) {
-            sendMessage(req.itemId, function () {
+            sendMessage(itemId, function () {
                 res.status(201).send(createResult(result));
-            }, function () {
-                res.status(500).send("Error");
+            }, function (error) {
+                res.status(500).send({
+                    error: error
+                });
             });
-        }, function () {
-            res.status(500).send("Error");
+        }, function (error) {
+            res.status(500).send({
+                error: error
+            });
         });
     });
 
