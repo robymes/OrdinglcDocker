@@ -1,0 +1,28 @@
+version: "2"
+services:
+    mongo:
+        image: mongo:3.2        
+        container_name: mongo_db
+        hostname: mongo:db
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongodata:/data/db
+        command: --smallfiles --rest --httpinterface
+        networks:
+            - backend
+    rabbitmq:
+        image: rabbitmq:3.6.5-management
+        container_name: rabbitmq_bus
+        hostname: rabbitmq_bus
+        ports:
+            - "15671:15671"
+            - "15672:15672"
+        networks:
+            - "frontend"
+            - "backend"
+volumes:
+    mongodata:
+networks:
+    frontend:
+    backend:
