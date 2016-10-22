@@ -74,19 +74,12 @@ try {
             } else {
                 checkItemsCollection(database, function (collection) {
                     console.log("Instance %s - Processing item %s", instanceUuid, itemId);
-                    collection.findAndModify({
-                        query: {
-                            itemId: itemId
-                        },
-                        sort: {
-                            itemId: 1
-                        },
-                        update: {
-                            $set: {
-                                isProcessed: true
-                            }
-                        },
-                        upsert: true
+                    collection.updateOne({
+                        "itemId": itemId
+                    }, {
+                        $set: {
+                            "isProcessed": true
+                        }
                     }, function (err, object) {
                         if (err) {
                             errorCallback(err);
