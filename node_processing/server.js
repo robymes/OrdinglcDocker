@@ -23,29 +23,33 @@ try {
 
     receiveMessages = function (errorCallback) {
         amqp.connect("amqp://rabbitmq_bus", function (err, conn) {
-            conn.createChannel(function (err, ch) {
-                var q = "ordinglc";
-                if (err) {
-                    errorCallback(err);
-                } else {
-                    try {
-                        ch.assertQueue(q, {
-                            durable: false
-                        });
-                        ch.consume(q, function (msg) {
-                            processItem(msg, function () {
-                                console.log("Instance %s - Processed item %s", instanceUuid, msg);
-                            }, function (err) {
-                                errorCallback(err);
-                            });
-                        }, {
-                            noAck: true
-                        });
-                    } catch (ex) {
+            if (err) {
+                errorCallback(err);
+            } else {
+                conn.createChannel(function (err, ch) {
+                    var q = "ordinglc";
+                    if (err) {
                         errorCallback(err);
+                    } else {
+                        try {
+                            ch.assertQueue(q, {
+                                durable: false
+                            });
+                            ch.consume(q, function (msg) {
+                                processItem(msg, function () {
+                                    console.log("Instance %s - Processed item %s", instanceUuid, msg);
+                                }, function (err) {
+                                    errorCallback(err);
+                                });
+                            }, {
+                                noAck: true
+                            });
+                        } catch (ex) {
+                            errorCallback(err);
+                        }
                     }
-                }
-            });
+                });
+            }
         });
     };
 
