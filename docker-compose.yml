@@ -10,7 +10,7 @@ services:
             - mongodata:/data/db
         command: --smallfiles --rest --httpinterface
         networks:
-            - backend
+            - main_network
     rabbitmq:
         image: rabbitmq:3.6.5-management
         container_name: rabbitmq_bus
@@ -19,10 +19,16 @@ services:
             - "15671:15671"
             - "15672:15672"
         networks:
-            - "frontend"
-            - "backend"
+            - main_network
+    node_ingestion:
+        image: robymes/node_ingestion
+        container_name: node_ingestion
+        hostname: node_ingestion
+        ports:
+            - "8080:8080"
+        networks:
+            - main_network
 volumes:
     mongodata:
 networks:
-    frontend:
-    backend:
+    main_network:
