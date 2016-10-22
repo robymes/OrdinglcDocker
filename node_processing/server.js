@@ -46,13 +46,15 @@ try {
                             }, function (err, msgOrFalse) {
                                 if (err) {
                                     errorCallback(err);
-                                } else if (msgOrFalse) {
-                                    processItem(msgOrFalse.content.toString(), function () {
-                                        console.log("Instance %s - Processed item %s", instanceUuid, msgOrFalse.content.toString());
-                                        successCallback();
-                                    }, function (err) {
-                                        errorCallback(err);
-                                    });
+                                } else {
+                                    if (msgOrFalse) {
+                                        processItem(msgOrFalse.content.toString(), function () {
+                                            console.log("Instance %s - Processed item %s", instanceUuid, msgOrFalse.content.toString());                                        
+                                        }, function (err) {
+                                            errorCallback(err);
+                                        });
+                                    }
+                                    successCallback();
                                 }
                             });
                         } catch (ex) {
