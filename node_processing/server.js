@@ -15,7 +15,8 @@ var mongoDb,
     maxErrors = 100,
     fakeDelay = 2000,
     errorsCount,
-    pollListen;
+    pollListen,
+    onTimeout;
 
 try {
     uuid = require("uuid");
@@ -25,6 +26,30 @@ try {
     mongoClient = mongoDb.MongoClient;
     mongoUrl = "mongodb://mongo:27017/ordinglc";
 
+    onTimeout = function (err, ch, errorCallback) {
+        var q = "ordinglc";
+        if (err) {
+            errorCallback(err);
+        } else {
+            try {
+                ch.assertQueue(q, {
+                    durable: false
+                });
+                ch.consume(q, function (msg) {
+                    processItem(msg.content.toString(), function () {
+                        console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
+                    }, function (err) {
+                        errorCallback(err);
+                    });
+                }, {
+                    noAck: true
+                });
+            } catch (ex) {
+                errorCallback(err);
+            }
+        }
+    };
+
     receiveMessages = function (errorCallback) {
         amqp.connect("amqp://rabbitmq_bus", function (err, conn) {
             if (err) {
@@ -32,27 +57,7 @@ try {
             } else {
                 console.log("Instance %s - Waiting for messages", instanceUuid);
                 conn.createChannel(function (err, ch) {
-                    var q = "ordinglc";
-                    if (err) {
-                        errorCallback(err);
-                    } else {
-                        try {
-                            ch.assertQueue(q, {
-                                durable: false
-                            });
-                            ch.consume(q, function (msg) {
-                                setTimeout(processItem, fakeDelay, msg.content.toString(), function () {
-                                    console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
-                                }, function (err) {
-                                    errorCallback(err);
-                                });
-                            }, {
-                                noAck: true
-                            });
-                        } catch (ex) {
-                            errorCallback(err);
-                        }
-                    }
+                    setTimeout(onTimeout, fakeDelay, err, ch, errorCallback);
                 });
             }
         });
