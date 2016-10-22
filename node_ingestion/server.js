@@ -167,15 +167,6 @@ try {
         });
     });
 
-    /*app.get("/listUsers", function (req, res) {
-        var collection;
-        checkItemsCollection();
-        collection = db.collection("users");
-        collection.find().toArray(function (err, items) {
-            res.status(201).send(createResult(items));
-        });
-    });*/
-
     server = app.listen(8080, function () {
         var host = server.address().address,
             port = server.address().port;

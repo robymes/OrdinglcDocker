@@ -1,0 +1,18 @@
+{
+    "name": "robymes_node_processing",
+    "version": "1.0.0",
+    "description": "Node.js REST Service for data processing",
+    "author": "Robero Messora <robymes@gmail.com>",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "4.14.0",
+        "body-parser": "1.15.2",
+        "mongodb": "2.2.1",
+        "json-query": "2.1.0",
+        "uuid": "2.0.2",
+        "amqplib": "0.4.2"
+    }
+}
