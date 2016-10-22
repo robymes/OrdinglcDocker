@@ -2,7 +2,6 @@ version: "2"
 services:
     rabbitmq:
         image: rabbitmq:3.6.5-management
-        container_name: rabbitmq_bus
         hostname: rabbitmq_bus
         ports:
             - "15671:15671"
@@ -11,7 +10,6 @@ services:
             - main_network
     mongo:
         image: mongo:3.2        
-        container_name: mongo_db
         hostname: mongo_db
         ports:
             - "27017:27017"
@@ -24,8 +22,6 @@ services:
             - rabbitmq    
     node_ingestion:
         image: robymes/node_ingestion:latest
-        container_name: node_ingestion
-        hostname: node_ingestion
         ports:
             - "8080:8080"
         networks:
@@ -35,8 +31,6 @@ services:
             - mongo            
     node_processing:
         image: robymes/node_processing:latest
-        container_name: node_processing
-        hostname: node_processing
         networks:
             - main_network
         depends_on:

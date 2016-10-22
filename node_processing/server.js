@@ -30,7 +30,6 @@ try {
             if (err) {
                 errorCallback(err);
             } else {
-                console.log("Instance %s - Waiting for messages", instanceUuid);
                 conn.createChannel(function (err, ch) {
                     var q = "ordinglc";
                     if (err) {
@@ -40,7 +39,6 @@ try {
                             ch.assertQueue(q, {
                                 durable: false
                             });
-                            console.log("Instance %s - Getting message", instanceUuid);
                             ch.get(q, {
                                 noAck: true
                             }, function (err, msgOrFalse) {
@@ -49,7 +47,7 @@ try {
                                 } else {
                                     if (msgOrFalse) {
                                         processItem(msgOrFalse.content.toString(), function () {
-                                            console.log("Instance %s - Processed item %s", instanceUuid, msgOrFalse.content.toString());                                        
+                                            console.log("Instance %s - Processed item %s", instanceUuid, msgOrFalse.content.toString());
                                         }, function (err) {
                                             errorCallback(err);
                                         });
