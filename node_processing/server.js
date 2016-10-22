@@ -13,7 +13,7 @@ var mongoDb,
     receiveMessages,
     itemsCollectionName = "items",
     maxErrors = 100,
-    fakeDelay = 2000,
+    fakeDelay = 5000,
     errorsCount,
     pollListen;
 
@@ -74,7 +74,6 @@ try {
                 errorCallback("MongoDB database is null");
             } else {
                 checkItemsCollection(database, function (collection) {
-                    console.log("Instance %s - Processing item %s", instanceUuid, itemId);
                     collection.updateOne({
                         "itemId": itemId
                     }, {
