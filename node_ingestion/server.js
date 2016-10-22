@@ -9,7 +9,6 @@ var express,
     mongoUrl,
     uuid,
     instanceUuid,
-    db,
     app,
     server,
     checkItemsCollection,
@@ -28,14 +27,6 @@ try {
     mongoClient = mongoDb.MongoClient;
     app = express();
     mongoUrl = "mongodb://mongo:27017/ordinglc";
-    console.log(mongoUrl);
-    mongoClient.connect(mongoUrl, function (err, database) {
-        if (!database) {
-            throw "MongoDB database is null";
-        }
-        console.log("Connected correctly to MongoDB server");
-        db = database;
-    });
     app.use(bodyParser.json());
 
     sendMessage = function (itemId, successCallback, errorCallback) {
@@ -67,30 +58,39 @@ try {
         });
     };
 
-    checkItemsCollection = function () {
-        db.createCollection(itemsCollectionName, function (err, collection) {
+    checkItemsCollection = function (database) {
+        database.createCollection(itemsCollectionName, function (err, collection) {
             return;
         });
     };
 
     insertDbItem = function (item, successCallback, errorCallback) {
-        var collection;
-        try {
-            checkItemsCollection();
-            collection = db.collection(itemsCollectionName);
-            collection.insertOne(item, {
-                w: 1
-            }, function (err, result) {
-                if (err) {
-                    errorCallback();
-                } else {
-                    console.log("Item added with ID %s", item.itemId);
-                    successCallback(result);
+        mongoClient.connect(mongoUrl, function (err, database) {
+            var collection;
+            if (!database) {
+                errorCallback("MongoDB database is null");
+            } else {
+                try {
+                    checkItemsCollection();
+                    collection = database.collection(itemsCollectionName);
+                    collection.insertOne(item, {
+                        w: 1
+                    }, function (err, result) {
+                        if (err) {
+                            errorCallback(err);
+                        } else {
+                            console.log("Item added with ID %s", item.itemId);
+                            successCallback(result);
+                        }
+                        database.close();
+                    });
+                } catch (ex) {
+                    errorCallback(ex);
+                } finally {
+                    database.close();
                 }
-            });
-        } catch (ex) {
-            errorCallback(ex);
-        }
+            }
+        });
     };
 
     app.post("/addItem", function (req, res) {
