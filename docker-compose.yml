@@ -21,7 +21,7 @@ services:
         networks:
             - main_network
     node_ingestion:
-        image: robymes/node_ingestion
+        image: robymes/node_ingestion:latest
         container_name: node_ingestion
         hostname: node_ingestion
         ports:
