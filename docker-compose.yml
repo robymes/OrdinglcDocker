@@ -3,7 +3,7 @@ services:
     mongo:
         image: mongo:3.2        
         container_name: mongo_db
-        hostname: mongo:db
+        hostname: mongo_db
         ports:
             - "27017:27017"
         volumes:
@@ -29,8 +29,8 @@ services:
         networks:
             - main_network
         depends_on:
-            - mongo_db
-            - rabbitmq_bus
+            - mongo
+            - rabbitmq
     node_processing:
         image: robymes/node_processing:latest
         container_name: node_processing
@@ -38,8 +38,8 @@ services:
         networks:
             - main_network
         depends_on:
-            - mongo_db
-            - rabbitmq_bus
+            - mongo
+            - rabbitmq
 volumes:
     mongodata:
 networks:
