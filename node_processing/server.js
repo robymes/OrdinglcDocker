@@ -40,9 +40,8 @@ try {
                                 durable: false
                             });
                             ch.consume(q, function (msg) {
-                                console.log("Instance %s - Received itemId %s", instanceUuid, msg);
-                                processItem(msg, function () {
-                                    console.log("Instance %s - Processed item %s", instanceUuid, msg);
+                                processItem(msg.content, function () {
+                                    console.log("Instance %s - Processed item %s", instanceUuid, msg.content);
                                 }, function (err) {
                                     errorCallback(err);
                                 });
