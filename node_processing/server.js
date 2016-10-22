@@ -74,10 +74,13 @@ try {
             } else {
                 checkItemsCollection(database, function (collection) {
                     collection.findAndModify({
-                        itemId: itemId
-                    }, {
-                        $set: {
-                            isProcessed: true
+                        query: {
+                            itemId: itemId
+                        },
+                        update: {
+                            $set: {
+                                isProcessed: true
+                            }
                         }
                     }, function (err, object) {
                         if (err) {
