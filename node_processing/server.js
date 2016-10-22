@@ -29,6 +29,7 @@ try {
             if (err) {
                 errorCallback(err);
             } else {
+                console.log("Instance %s - Waiting for messages", instanceUuid);
                 conn.createChannel(function (err, ch) {
                     var q = "ordinglc";
                     if (err) {
@@ -106,6 +107,8 @@ try {
             console.log("Instance %s - Max Errors: %s", instanceUuid);
         }
     };
+
+    pollListen();
 } catch (error) {
     console.log("Instance %s - Error: %s", instanceUuid, error);
 }
