@@ -15,7 +15,8 @@ var express,
     insertDbItem,
     amqp,
     sendMessage,
-    itemsCollectionName = "items";
+    itemsCollectionName = "items",
+    countItemsByProcessedStatus;
 
 try {
     uuid = require("uuid");
@@ -93,6 +94,30 @@ try {
         });
     };
 
+    countItemsByProcessedStatus = function (isProcesed, successCallback, errorCallback) {
+        mongoClient.connect(mongoUrl, function (err, database) {
+            if (!database) {
+                errorCallback("MongoDB database is null");
+            } else {
+                checkItemsCollection(database, function (collection) {
+                    collection.count({
+                        isProcessed: isProcesed
+                    }, function (err, count) {
+                        if (err) {
+                            errorCallback(err);
+                        } else {
+                            successCallback(count);
+                        }
+                        database.close();
+                    });
+                }, function (err) {
+                    errorCallback(err);
+                    database.close();
+                });
+            }
+        });
+    };
+
     app.post("/addItem", function (req, res) {
         var itemId = uuid.v4();
         req.body.itemId = itemId;
@@ -102,6 +127,27 @@ try {
                 res.status(201).send({
                     instanceId: instanceUuid,
                     itemId: itemId
+                });
+            }, function (error) {
+                res.status(500).send({
+                    error: error
+                });
+            });
+        }, function (error) {
+            res.status(500).send({
+                error: error
+            });
+        });
+    });
+
+    app.get("/itemsProcessed", function (req, res) {
+        countItemsByProcessedStatus(true, function (result) {
+            var itemsProcessedCount = result;
+            countItemsByProcessedStatus(false, function (result) {
+                res.status(200).send({
+                    instanceId: instanceUuid,
+                    processedCount: itemsProcessedCount,
+                    notProcessedCount: result
                 });
             }, function (error) {
                 res.status(500).send({
