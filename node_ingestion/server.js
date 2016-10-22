@@ -58,21 +58,22 @@ try {
         });
     };
 
-    checkItemsCollection = function (database) {
+    checkItemsCollection = function (database, successCallback, errorCallback) {
         database.createCollection(itemsCollectionName, function (err, collection) {
-            return;
+            if (err) {
+                errorCallback(err);
+            } else {
+                successCallback(collection);
+            }
         });
     };
 
     insertDbItem = function (item, successCallback, errorCallback) {
         mongoClient.connect(mongoUrl, function (err, database) {
-            var collection;
             if (!database) {
                 errorCallback("MongoDB database is null");
             } else {
-                try {
-                    checkItemsCollection();
-                    collection = database.collection(itemsCollectionName);
+                checkItemsCollection(database, function (collection) {
                     collection.insertOne(item, {
                         w: 1
                     }, function (err, result) {
@@ -84,11 +85,10 @@ try {
                         }
                         database.close();
                     });
-                } catch (ex) {
-                    errorCallback(ex);
-                } finally {
+                }, function (err) {
+                    errorCallback(err);
                     database.close();
-                }
+                });
             }
         });
     };
