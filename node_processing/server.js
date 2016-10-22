@@ -105,7 +105,7 @@ try {
                 setTimeout(pollListen, delay);
             }, function (error) {
                 console.log("Instance %s - Error: %s", instanceUuid, error);
-                setTimeout(pollListen, delay);
+                setTimeout(pollListen, 5000);
             });
         } else {
             console.log("Instance %s - Max Errors: %s", instanceUuid);
