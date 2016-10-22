@@ -49,11 +49,16 @@ try {
                     if (err) {
                         errorCallback();
                     } else {
-                        ch.assertQueue(q, {
-                            durable: false
-                        });
-                        ch.sendToQueue(q, new Buffer.from(itemId));
-                        console.log("Message sent with ID %s", itemId);
+                        try {
+                            ch.assertQueue(q, {
+                                durable: false
+                            });
+                            ch.sendToQueue(q, new Buffer.from(itemId));
+                            console.log("Message sent with ID %s", itemId);
+                            successCallback();
+                        } catch (ex) {
+                            errorCallback();
+                        }
                     }
                 });
             }
@@ -92,8 +97,8 @@ try {
     };
 
     app.post("/addItem", function (req, res) {
-        req.itemId = uuid.v4();
-        req.isProcessed = false;
+        req.body.itemId = uuid.v4();
+        req.body.isProcessed = false;
         insertDbItem(req, function (result) {
             sendMessage(req.itemId, function () {
                 res.status(201).send(createResult(result));
