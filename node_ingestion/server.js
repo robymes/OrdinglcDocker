@@ -15,7 +15,8 @@ var express,
     checkItemsCollection,
     insertDbItem,
     createResult,
-    //amqp,
+    amqp,
+    sendMessage,
     itemsCollectionName = "items";
 
 try {
@@ -24,7 +25,7 @@ try {
     express = require("express");
     bodyParser = require("body-parser");
     mongoDb = require("mongodb");
-    //amqp = require("amqplib/callback_api");
+    amqp = require("amqplib/callback_api");
     mongoClient = mongoDb.MongoClient;
     app = express();
     mongoUrl = "mongodb://mongo:27017/ordinglc";
@@ -37,6 +38,30 @@ try {
         db = database;
     });
     app.use(bodyParser.json());
+
+    sendMessage = function (itemId, successCallback, errorCallback) {
+        amqp.connect("amqp://rabbitmq_bus", function (err, conn) {
+            if (err) {
+                errorCallback();
+            } else {
+                conn.createChannel(function (err, ch) {
+                    var q = "ordinglc";
+                    if (err) {
+                        errorCallback();
+                    } else {
+                        ch.assertQueue(q, {
+                            durable: false
+                        });
+                        ch.sendToQueue(q, new Buffer.from(itemId));
+                        console.log("Message sent with ID %s", itemId);
+                    }
+                });
+            }
+            setTimeout(function () {
+                conn.close();
+            }, 500);
+        });
+    };
 
     createResult = function (res) {
         return {
@@ -67,8 +92,14 @@ try {
     };
 
     app.post("/addItem", function (req, res) {
+        req.itemId = uuid.v4();
+        req.isProcessed = false;
         insertDbItem(req, function (result) {
-            res.status(201).send(createResult(result));
+            sendMessage(req.itemId, function () {
+                res.status(201).send(createResult(result));
+            }, function () {
+                res.status(500).send("Error");
+            });
         }, function () {
             res.status(500).send("Error");
         });

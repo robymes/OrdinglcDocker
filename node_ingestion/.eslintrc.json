@@ -43,13 +43,14 @@
     },
     "env": {
         "browser": true,
-        "jquery": true
+        "jquery": true        
     },
     "extends": "eslint:recommended",
     "globals": {
         "__dirname": true,
         "require": true,
         "console": true,
-        "process": true
+        "process": true,
+        "Buffer": true
     }
 }
