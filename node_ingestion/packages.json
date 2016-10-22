@@ -1,7 +1,7 @@
 {
-    "name": "robymes_node_injestion",
+    "name": "robymes_node_ingestion",
     "version": "1.0.0",
-    "description": "Node.js REST Service for data injestion",
+    "description": "Node.js REST Service for data ingestion",
     "author": "Robero Messora <robymes@gmail.com>",
     "main": "server.js",
     "scripts": {

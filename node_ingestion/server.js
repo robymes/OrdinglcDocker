@@ -86,7 +86,7 @@ try {
     server = app.listen(8080, function () {
         var host = server.address().address,
             port = server.address().port;
-        console.log("Data injestion server listening at http://%s:%s", host, port);
+        console.log("Data ingestion server listening at http://%s:%s", host, port);
     });
 } catch (error) {
     console.log("Error: %s", error);
