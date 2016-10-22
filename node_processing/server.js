@@ -13,6 +13,7 @@ var mongoDb,
     receiveMessages,
     itemsCollectionName = "items",
     maxErrors = 100,
+    fakeDelay = 2000,
     errorsCount,
     pollListen;
 
@@ -40,11 +41,11 @@ try {
                                 durable: false
                             });
                             ch.consume(q, function (msg) {
-                                processItem(msg.content.toString(), function () {
+                                setTimeout(processItem(msg.content.toString(), function () {
                                     console.log("Instance %s - Processed item %s", instanceUuid, msg.content.toString());
                                 }, function (err) {
                                     errorCallback(err);
-                                });
+                                }), fakeDelay);
                             }, {
                                 noAck: true
                             });
