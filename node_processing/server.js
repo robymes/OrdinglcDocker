@@ -11,7 +11,10 @@ var mongoDb,
     processItem,
     amqp,
     receiveMessages,
-    itemsCollectionName = "items";
+    itemsCollectionName = "items",
+    maxErrors = 100,
+    errorsCount,
+    pollListen;
 
 try {
     uuid = require("uuid");
@@ -91,10 +94,18 @@ try {
         });
     };
 
-    console.log("Data processig server waiting for messages");
-    receiveMessages(function (error) {
-        console.log("Instance %s - Error: %s", instanceUuid, error);
-    });
+    errorsCount = 0;
+
+    pollListen = function () {
+        if (errorsCount <= maxErrors) {
+            receiveMessages(function (error) {
+                console.log("Instance %s - Error: %s", instanceUuid, error);
+                setTimeout(pollListen, 5000);
+            });
+        } else {
+            console.log("Instance %s - Max Errors: %s", instanceUuid);
+        }
+    };
 } catch (error) {
     console.log("Instance %s - Error: %s", instanceUuid, error);
 }
