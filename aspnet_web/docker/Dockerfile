@@ -10,4 +10,4 @@ ENTRYPOINT ["dotet", "aspnet_web.dll"]
 ARG source=/deploy
 WORKDIR /app
 EXPOSE 80
-COPY $source
+COPY $source .
