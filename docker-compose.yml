@@ -43,7 +43,7 @@ services:
     aspnet_web:
         image: robymes/aspnet_web:latest
         ports:
-            - "5000:80"
+            - "80:5000"
         networks:
             - main_network
         depends_on:
