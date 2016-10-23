@@ -2,12 +2,16 @@ this.robymes = (function (robymes) {
     var ctor = function () {
         var self = this;
         self.getItemsProcessed = function () {
-            jQuery.get("http://localhost:8080/itemsProcessed")
+            jQuery("#alertMessage").addClass("hide");
+            jQuery.get("http://node_ingestion:8080/itemsProcessed")
                 .done(function (result) {
-                    return;
+                    jQuery("#processedCount").text(result.processedCount);
+                    jQuery("#notProcessedCount").text(result.notProcessedCount);
                 })
                 .fail(function () {
-                    return;
+                    jQuery("#alertMessage").removeClass("hide");
+                    jQuery("#processedCount").text("-");
+                    jQuery("#notProcessedCount").text("-");
                 });
         };
     };
