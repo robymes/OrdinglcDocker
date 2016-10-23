@@ -39,7 +39,16 @@ services:
         depends_on:
             - rabbitmq
             - mongo   
-            - node_ingestion         
+            - node_ingestion   
+    aspnet_web:
+        image: robymes/aspnet_web:latest
+        networks:
+            - main_network
+        depends_on:
+            - rabbitmq
+            - mongo
+            - node_ingestion
+            - node_processing      
 volumes:
     mongodata:
 networks:
