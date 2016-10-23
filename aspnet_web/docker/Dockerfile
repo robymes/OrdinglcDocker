@@ -6,7 +6,7 @@ FROM microsoft/aspnetcore:1.0.1
 # Author: robymes
 MAINTAINER robymes <robymes@gmail.com>
 # entry point
-ENTRYPOINT ["dotnet", "aspnet_web.dll"]
+ENTRYPOINT ["dotnet", "aspnet_web_app.dll"]
 ARG source=/deploy
 WORKDIR /app
 EXPOSE 80
