@@ -2,6 +2,26 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div>
-    Home
+<div class="row">
+    <div class="col-md-6">
+        <div class="jumbotron">
+            <h3>Items processed</h3>
+            <div class="alert alert-success" role="alert">            
+                <h1 id="processedCount"></h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="jumbotron">
+            <h3>Items not processed</h3>
+            <div class="alert alert-danger" role="alert">
+                <h1 id="notProcessedCount"></h1>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="alert alert-waring hide" role="alert">
+        <strong>WARNING: </strong><span>Error with API</span> 
+    </div>
 </div>

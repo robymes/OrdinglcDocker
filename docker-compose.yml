@@ -25,6 +25,7 @@ services:
             - rabbitmq    
     node_ingestion:
         image: robymes/node_ingestion:latest
+        hostname: node_ingestion
         ports:
             - "8080:8080"
         networks:
