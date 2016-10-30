@@ -2,7 +2,7 @@
 # Dockerfile to build a Node.JS data processing
 ###########################################
 # Base image is Ubuntu
-FROM node:argon
+FROM node:6
 # Author: robymes
 MAINTAINER robymes <robymes@gmail.com>
 # Create app directory
