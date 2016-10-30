@@ -5,7 +5,6 @@ services:
         container_name: rabbitmq_bus
         hostname: rabbitmq_bus
         ports:
-            - "15671:15671"
             - "15672:15672"
             - "5672:5672"
         networks:
@@ -26,6 +25,11 @@ services:
     node_ingestion:
         image: robymes/node_ingestion:latest
         hostname: node_ingestion
+        environment:
+            - ENV_MONGOHOST=mongo_db
+            - ENV_MONGOPORT=27017
+            - ENV_RABBITHOST=rabbitmq_bus
+            - ENV_RABBITPORT=5672
         ports:
             - "8080:8080"
         networks:
