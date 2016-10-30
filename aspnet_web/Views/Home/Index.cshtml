@@ -4,7 +4,10 @@
 
 <div class="row">
     <div class="col-md-6">
-        <input id="serviceUrl" type="hidden" value="@ViewBag["ServiceUrl"]">
+        <div>
+            @ViewBag["ServiceUrl"]
+        </div>    
+        <input id="serviceUrl" type="hidden" value="localhost:8080">
         <div class="jumbotron">
             <h3>Items processed</h3>
             <div class="alert alert-success" role="alert">            
