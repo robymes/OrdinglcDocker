@@ -2,7 +2,10 @@
 
 "use strict";
 
-var mongoDb,
+var util,
+    mongoDb,
+    mongoHost,
+    mongoPort,
     mongoClient,
     mongoUrl,
     uuid,
@@ -12,34 +15,43 @@ var mongoDb,
     amqp,
     receiveMessage,
     itemsCollectionName = "items",
+    rabbitHost,
+    rabbitPort,
+    rabbitUrl,
+    rabbitQueue = "ordinglc",
     delay = 2000,
     maxErrors = 100,
     errorsCount,
     pollListen;
 
 try {
+    util = require("util");
     uuid = require("uuid");
     instanceUuid = uuid.v4();
     mongoDb = require("mongodb");
+    mongoHost = process.env.ENV_MONGOHOST;
+    mongoPort = process.env.ENV_MONGOPORT;
     amqp = require("amqplib/callback_api");
     mongoClient = mongoDb.MongoClient;
-    mongoUrl = "mongodb://mongo:27017/ordinglc";
+    mongoUrl = util.format("mongodb://%s:%s/ordinglc", mongoHost, mongoPort);
+    rabbitHost = process.env.ENV_RABBITHOST;
+    rabbitPort = process.env.ENV_RABBITPORT;
+    rabbitUrl = util.format("amqp://%s:%s", rabbitHost, rabbitPort);
 
     receiveMessage = function (successCallback, errorCallback) {
-        amqp.connect("amqp://rabbitmq_bus", function (err, conn) {
+        amqp.connect(rabbitUrl, function (err, conn) {
             if (err) {
                 errorCallback(err);
             } else {
                 conn.createChannel(function (err, ch) {
-                    var q = "ordinglc";
                     if (err) {
                         errorCallback(err);
                     } else {
                         try {
-                            ch.assertQueue(q, {
+                            ch.assertQueue(rabbitQueue, {
                                 durable: false
                             });
-                            ch.get(q, {
+                            ch.get(rabbitQueue, {
                                 noAck: true
                             }, function (err, msgOrFalse) {
                                 if (err) {
