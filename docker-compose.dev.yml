@@ -1,0 +1,43 @@
+version: "2"
+services:
+    rabbitmq:
+        image: rabbitmq:3.6.5-management
+        container_name: rabbitmq_bus
+        hostname: rabbitmq_bus
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+        networks:
+            - main_network
+    mongo:
+        image: mongo:3.2        
+        container_name: mongo_db
+        hostname: mongo_db
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongodata:/data/db
+        command: --smallfiles --rest --httpinterface
+        networks:
+            - main_network
+        depends_on:
+            - rabbitmq    
+    node_ingestion:
+        image: robymes/node_ingestion:latest
+        hostname: node_ingestion
+        environment:
+            - ENV_MONGOHOST=mongo_db
+            - ENV_MONGOPORT=27017
+            - ENV_RABBITHOST=rabbitmq_bus
+            - ENV_RABBITPORT=5672
+        ports:
+            - "8080:8080"
+        networks:
+            - main_network
+        depends_on:
+            - rabbitmq
+            - mongo
+volumes:
+    mongodata:
+networks:
+    main_network:
