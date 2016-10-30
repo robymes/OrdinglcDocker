@@ -52,6 +52,9 @@ services:
             - node_ingestion   
     aspnet_web:
         image: robymes/aspnet_web:latest
+        environment:
+            - ENV_SERVICEHOST=localhost
+            - ENV_SERVICEPORT=8080
         ports:
             - "80:5000"
         networks:
