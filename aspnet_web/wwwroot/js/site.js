@@ -1,8 +1,9 @@
 this.robymes = (function (robymes) {
     var ctor = function () {
-        var self = this;
+        var self = this,
+            serviceUrl = jQuery("#serviceUrl").val();
         self.getItemsProcessed = function () {
-            jQuery.get("http://localhost:8080/itemsProcessed")
+            jQuery.get("http://" + serviceUrl + "/itemsProcessed")
                 .done(function (result) {
                     jQuery("#alertMessage").addClass("hide");
                     jQuery("#processedCount").text(result.processedCount);

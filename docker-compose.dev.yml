@@ -50,6 +50,20 @@ services:
             - rabbitmq
             - mongo   
             - node_ingestion   
+    aspnet_web:
+        image: local/aspnet_web:dev
+        environment:
+            - ENV_SERVICEHOST=localhost
+            - ENV_SERVICEPORT=8080
+        ports:
+            - "80:5000"
+        networks:
+            - main_network
+        depends_on:
+            - rabbitmq
+            - mongo
+            - node_ingestion
+            - node_processing
 volumes:
     mongodata:
 networks:
