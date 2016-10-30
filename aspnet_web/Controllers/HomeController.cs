@@ -12,7 +12,7 @@ namespace WebApplication.Controllers
         {
             /*this.ViewBag["ServiceUrl"] = string.Format("{0}:{1}", Environment.GetEnvironmentVariable("ENV_SERVICEHOST"),
                 Environment.GetEnvironmentVariable("ENV_SERVICEPORT"));*/
-            this.ViewBag["ServiceUrl"] = "localhost:8080";    
+            this.ViewData["ServiceUrl"] = "localhost:8080";    
             return View();
         }        
 
