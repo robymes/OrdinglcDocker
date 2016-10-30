@@ -23,7 +23,7 @@ services:
         depends_on:
             - rabbitmq    
     node_ingestion:
-        image: robymes/node_ingestion:latest
+        image: local/node_ingestion:dev
         hostname: node_ingestion
         environment:
             - ENV_MONGOHOST=mongo_db
