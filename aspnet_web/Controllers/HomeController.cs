@@ -10,9 +10,8 @@ namespace WebApplication.Controllers
     {
         public IActionResult Index()
         {
-            /*this.ViewBag["ServiceUrl"] = string.Format("{0}:{1}", Environment.GetEnvironmentVariable("ENV_SERVICEHOST"),
-                Environment.GetEnvironmentVariable("ENV_SERVICEPORT"));*/
-            this.ViewData["ServiceUrl"] = "localhost:8080";    
+            this.ViewData["ServiceUrl"] = string.Format("{0}:{1}", Environment.GetEnvironmentVariable("ENV_SERVICEHOST"),
+                Environment.GetEnvironmentVariable("ENV_SERVICEPORT"));
             return View();
         }        
 
